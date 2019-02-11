@@ -7,6 +7,9 @@ router.get('/google', passport.authenticate('google', {
   //information to request from google after authentication passes
 }));
 
+// router.get('/local', passport.authenticate('local', {
+// }));
+
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: '/'
