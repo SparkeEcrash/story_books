@@ -1,0 +1,32 @@
+<h1>Stories</h1>
+<div class="row">
+  {{#each stories}}
+    <div class="col s12 m4">
+      <div class="card">
+        <div class="card-image">
+          <a href="/stories/edit/{{id}}" class="btn-floating halfway-fab red">
+            <i class="fa fa-pencil"></i>
+          </a>
+        </div>
+        <div class="card-content center-align">
+          <h5>{{title}}</h5>
+          {{!-- stripTags body ==> stripTags(body) *using the helper function --}}
+          {{!-- truncate body 150 ==> truncate(body, 150) *using the helper function --}}
+          <p class="story-text">{{truncate (stripTags body) 150}}</p>
+          {{!-- {{{ }}} three curly brackets parses the text into html --}}
+          {{!-- {{ }} two curly brackets just prints out the text --}}
+          <br>
+          <div class="chip">
+            <img src="{{user.image}}" alt="Contact Person">
+            {{user.firstName}} {{user.lastName}}
+          </div>
+        </div>
+        <div class="card-action center-align">
+          <a class="btn grey" href="/stories/show/{{id}}">Read More</a>
+        </div>
+      </div>
+    </div>
+  {{else}}
+    <p>No stories found</p>
+  {{/each}}
+</div>

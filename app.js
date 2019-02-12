@@ -1,12 +1,15 @@
 const express = require('express');
+const path = require('path');
 const exphbs = require('express-handlebars');
+const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
 
-// Load User Model
+// Load Models
 require('./models/User');
+require('./models/Story');
 
 // Passport Config
 require('./config/passport')(passport);
@@ -14,9 +17,18 @@ require('./config/passport')(passport);
 // Load Routes
 const index = require('./routes/index');
 const auth = require('./routes/auth');
+const stories = require('./routes/stories');
 
 // Load Keys
 const keys = require('./config/keys');
+
+// Handlebars Helpers
+const {
+  truncate,
+  stripTags,
+  formatDate,
+  select
+} = require('./helpers/hbs');
 
 // Mongoose Connect
 mongoose.connect(keys.mongoURI, {useNewUrlParser: true})
@@ -25,8 +37,22 @@ mongoose.connect(keys.mongoURI, {useNewUrlParser: true})
 
 const app = express();
 
+// Body Parser Middleware
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json());
+
+// Method Override Middleware
+app.use(methodOverride('_method'));
+
 // Handlebars Middleware
 app.engine('handlebars', exphbs({
+  //set Handlebars Helpers to enable use in handlebar files in view
+  helpers: {
+    truncate,
+    stripTags,
+    formatDate,
+    select
+  },
   defaultLayout:'main'
 }));
 app.set('view engine', 'handlebars');
@@ -50,10 +76,14 @@ app.use((req, res, next) => {
   next()
 })
 
+// Set Static Folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Use Routes
 app.use('/', index);
 app.use('/auth', auth);
 //Routes need to be placed at the bottom to include all the middleware
+app.use('/stories', stories);
 
 const port = process.env.PORT || 5000;
 
